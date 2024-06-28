@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackathon_project/App%20Styles/ColorStyle/colors.dart';
+import 'package:hackathon_project/App%20Styles/Text%20Style/text_style.dart';
 import 'package:hackathon_project/constants/texts.dart';
 import 'package:hackathon_project/utils/elevated_button.dart';
 import 'package:hackathon_project/utils/outlined_button.dart';
@@ -14,12 +15,13 @@ class FirstScreen extends StatefulWidget {
 }
 
 class _FirstScreenState extends State<FirstScreen> {
+  final TAppColor tAppColor = TAppColor();
   @override
   Widget build(BuildContext context) {
   var device = MediaQuery.of(context);
   Size screenSize =device.size;
     return Scaffold(
-      backgroundColor: TAppColor.backgroundColor,
+      backgroundColor: tAppColor.scaffoldColor,
       body:Container(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -31,7 +33,7 @@ class _FirstScreenState extends State<FirstScreen> {
             ),
             Column(
               children: [
-                Text(TConstantTexts.appMoto,style: Theme.of(context).textTheme.displayMedium,
+                Text(TConstantTexts.appMoto,style: TTextStyle.elevatedButtonText,
                 textAlign: TextAlign.center,),
               ],
             ),
