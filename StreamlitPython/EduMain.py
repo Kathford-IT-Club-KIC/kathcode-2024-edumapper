@@ -1,6 +1,8 @@
 import streamlit as st
 import base64
+import Home
 from dbconn import *
+
 
 # Ensure userStatus is set in session state
 if 'userStatus' not in st.session_state:
@@ -8,6 +10,9 @@ if 'userStatus' not in st.session_state:
 
 if 'statusAction' not in st.session_state:
     st.session_state.statusAction = None 
+    
+if 'isloggedIn' not in st.session_state:
+    st.session_state.isloggedIn=False 
 
 # def setStatusTrue():
 #     st.session_state.userStatus = True
@@ -35,11 +40,7 @@ def preHome_UI():
     col1, col2, col3, col4 = st.columns([2, 2, 2, 2])
 
     col2.button('Login', use_container_width=True, on_click=login_clicked)
-        # st.session_state.statusAction='Login'
-        # st.write('Login Clicked')
     col3.button('SignUp', use_container_width=True, on_click=signup_clicked)
-        # st.session_state.statusAction='SignUp'
-        # st.write('SignUp Clicked ')
 
 def signUp():
     col1,col2,col3=st.columns([1,5,1])
@@ -55,7 +56,7 @@ def signUp():
             nameexist = False
             for item in collection.find({},{'_id':0}):
                 if email in item['email']:
-                    st.write('Email already exists in the database')
+                    st.error('Email already exists in the database')
                     nameexist = True
                     break    
             
@@ -71,18 +72,50 @@ def signUp():
                 }
                 # Insert data into MongoDB
                 collection.insert_one(data)
-                st.write('Registration successfull')
+                st.success('Registration successfull')
+                st.session_state.statusAction='pre'
+                st.rerun() 
 
-def Login():
-    st.write('''<p style='margin-bottom: 5px; font-size: 16px; font-family: sans-serif; color: green; font-weight: bold'> Login</p>''', unsafe_allow_html=True)
-    # Add login form inputs here (e.g., username, password, etc.)
-    st.form_submit_button('Login')
-        
+def Login():    
+    st.write('<br><br>',unsafe_allow_html=True)
+    col1,col2,col3=st.columns([3,3,3],gap="medium")
+    with col2:
+        with open("assets/edumap.png", "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+
+        st.write(f"""
+            <div style='display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%;'>
+                <img src="data:image/png;base64,{encoded_string}" height="150" style="margin-bottom: 10px; border-radius: 50%; object-fit: cover;" />
+                <p style='margin-bottom: 5px; font-size: 16px; font-family: sans-serif; color: green; font-weight: bold'> Connecting the Learners Worldwide</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)  
+        with st.form('Login From',border=False):
+            #text input for username  
+            email=st.text_input('Email:',type="default",label_visibility='collapsed',placeholder='Email')
+            
+            #text input for password
+            password=st.text_input('Password',type="password",label_visibility='collapsed',placeholder='Password')
+
+            sub_column1, sub_column2,sub_column3=st.columns([3,2,3])
+            submitted=sub_column2.form_submit_button('Login',use_container_width=True)
+        with col2:
+            if submitted:
+                pass 
+              
+    
 
 if __name__ == '__main__':
     if not st.session_state.userStatus:
         preHome_UI()
-    if st.session_state.statusAction == 'Login':
-        Login()
-    if st.session_state.statusAction == 'SignUp':
-        signUp()
+    if st.session_state.isloggedIn==False:
+        if st.session_state.statusAction == 'Login':
+            Login()
+        if st.session_state.statusAction == 'SignUp':
+            signUp()
+        if st.session_state.statusAction == 'pre':
+            preHome_UI()
+        
+    if st.session_state.isloggedIn:
+        Home.HomeUI()
