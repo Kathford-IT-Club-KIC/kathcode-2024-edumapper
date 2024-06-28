@@ -43,6 +43,3 @@ app.*.map.json
 /android/app/release
 #To be updated
 
-
-web
-windows
