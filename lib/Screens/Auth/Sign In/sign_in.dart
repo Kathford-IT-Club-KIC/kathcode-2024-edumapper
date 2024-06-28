@@ -42,6 +42,13 @@ class _SignInScreenState extends State<SignInScreen
                         AppForm(controller: _emailController, hintText: 'Email',),
                         const SizedBox(height: TAppHeight.sizedboxHeight),
                         AppForm(controller: _passwordController, hintText: 'Password',),
+                        const SizedBox(
+                          height: TAppHeight.formheight,
+                        ),
+                        Align(alignment:Alignment.centerRight,
+                          child : TextButton(onPressed: (){}, 
+                          child: const Text("Forgot Password?"))
+                        ),
                         const SizedBox(height: TAppHeight.sizedboxHeight),
                         AppElevatedButton(text: 'Login', onTap: (){
                           Navigator.pushNamedAndRemoveUntil(
