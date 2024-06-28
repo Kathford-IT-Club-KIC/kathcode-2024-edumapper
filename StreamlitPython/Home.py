@@ -4,14 +4,94 @@ from dbconn import *
 from datetime import datetime
 import time 
 
-
+count = 0
 with open("assets/dummyUser.png", "rb") as image_file:
     encoded_string = base64.b64encode(image_file.read()).decode()
 
 
 
-# post_html_template = 
+def call_post(user_name,post_description,count):
+    st.write(f'''
+                <style>
+                    .body {{
+                        font-family: Arial, sans-serif;
+                        background-color: #f0f2f5;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                    }}
+                    .post-container {{
+                        width: 500px;
+                        background-color: #fff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                        padding: 16px;
+                        margin: 16px;
+                    }}
+                    .user {{
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 12px;
+                    }}
+                    .user-image img {{
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        margin-right: 12px;
+                    }}
+                    .user-name span {{
+                        font-weight: bold;
+                        font-size: 14px;
+                        color: #333;
+                    }}
+                    .caption-text p {{
+                        font-size: 14px;
+                        color: #333;
+                        margin: 0 0 12px;
+                    }}
+                    .button {{
+                        text-align: center;
+                        margin-top: 12px;
+                    }}
+                    .contact-me {{
+                        background-color: #1877f2;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 8px 16px;
+                        font-size: 14px;
+                        cursor: pointer;
+                    }}
+                    .contact-me:hover {{
+                        background-color: #165db5;
+                    }}
+                    .contact-me:active {{
+                        background-color: #154a93;
+                    }}
+                </style>
 
+                <div class="post-container">
+                    <div class="user">
+                        <div class="user-image">
+                            <img src="data:image/png;base64,{encoded_string}" alt="User Image">
+                        </div>
+                        <div class="user-name">
+                            <span>{user_name}</span>
+                        </div>
+                    </div>
+
+                        {post_description} 
+                    
+                </div>
+            ''', unsafe_allow_html=True)
+    ss_col1,ss_col2,ss_col3=st.columns([0.75,12,1.5])
+    with ss_col2.popover('Contact Me',use_container_width=True):
+        
+        message=st.text_input('Your Message',key=count,placeholder='Your Message',label_visibility='collapsed')
+        if st.button('Send Message :arrow_right:',key=count*50,use_container_width=True):
+            st.success('Message Sent')
 
 
 def HomeUI(loggedInUser):
@@ -24,6 +104,9 @@ def HomeUI(loggedInUser):
     with open("assets/edumap.png", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
 
+
+
+# For post in users feed
     # Display the image using Streamlit
     st.write(f"""
         <style>
@@ -94,87 +177,11 @@ def HomeUI(loggedInUser):
         s_col1, s_col2=st.columns([12,1])
         username=s_col1.text_input('Search',label_visibility='collapsed', placeholder='Search...')
         s_col2.button(':mag:','Search',use_container_width=True)
+        count = 0
         with st.container(border=False,height=375):
-            st.write(f'''
-                <style>
-                    .body {{
-                        font-family: Arial, sans-serif;
-                        background-color: #f0f2f5;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                        margin: 0;
-                    }}
-                    .post-container {{
-                        width: 500px;
-                        background-color: #fff;
-                        border-radius: 8px;
-                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                        padding: 16px;
-                        margin: 16px;
-                    }}
-                    .user {{
-                        display: flex;
-                        align-items: center;
-                        margin-bottom: 12px;
-                    }}
-                    .user-image img {{
-                        width: 40px;
-                        height: 40px;
-                        border-radius: 50%;
-                        margin-right: 12px;
-                    }}
-                    .user-name span {{
-                        font-weight: bold;
-                        font-size: 14px;
-                        color: #333;
-                    }}
-                    .caption-text p {{
-                        font-size: 14px;
-                        color: #333;
-                        margin: 0 0 12px;
-                    }}
-                    .button {{
-                        text-align: center;
-                        margin-top: 12px;
-                    }}
-                    .contact-me {{
-                        background-color: #1877f2;
-                        color: white;
-                        border: none;
-                        border-radius: 4px;
-                        padding: 8px 16px;
-                        font-size: 14px;
-                        cursor: pointer;
-                    }}
-                    .contact-me:hover {{
-                        background-color: #165db5;
-                    }}
-                    .contact-me:active {{
-                        background-color: #154a93;
-                    }}
-                </style>
-
-                <div class="post-container">
-                    <div class="user">
-                        <div class="user-image">
-                            <img src="data:image/png;base64,{encoded_string}" alt="User Image">
-                        </div>
-                        <div class="user-name">
-                            <span>{User['name']}</span>
-                        </div>
-                    </div>
-
-                        {user_post} 
-                    
-                </div>
-            ''', unsafe_allow_html=True)
-            ss_col1,ss_col2,ss_col3=st.columns([0.75,12,1.5])
-            with ss_col2.popover('Contact Me',use_container_width=True):
-                message=st.text_input('Your Message',placeholder='Your Message',label_visibility='collapsed')
-                if st.button('Send Message :arrow_right:','send_botton',use_container_width=True):
-                    st.success('Message Sent')
+            for item in postinfo.find() :
+                count+=1
+                call_post(item['name'],item['description'],count)
                     
             
          
