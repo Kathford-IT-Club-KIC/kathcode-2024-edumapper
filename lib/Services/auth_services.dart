@@ -1,7 +1,9 @@
 import 'dart:convert';
+
+
 import 'package:flutter/material.dart';
 import 'package:hackathon_project/Features/snack_bar.dart';
-import 'package:hackathon_project/Provider/user_provider.dart';
+import 'package:hackathon_project/Screens/Home%20Page/home_page.dart';
 import 'package:hackathon_project/constants/uri.dart';
 import 'package:hackathon_project/models/user_model.dart';
 import 'package:http/http.dart' as http;
@@ -9,15 +11,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Error Handling/error_handling.dart';
-import '../Screens/Home Page/home_page.dart';
+import '../Provider/user_provider.dart';
 
 class AuthService {
   //sign up
   void signUpUser({
     required BuildContext context,
     required String email,
-    required String name,
     required String password,
+    required String name,
     required String district,
     required String area,
   }) async {
@@ -27,13 +29,14 @@ class AuthService {
         name: name,
         email: email,
         password: password,
-        district : district,
+        district: district,
         area : area,
-        qualification : '',
+        qualification: '',
         token: '',
       );
+
       http.Response res = await http.post(
-        Uri.parse('$uri/api/user/register'),
+        Uri.parse('$uri/api/signup'),
         body: user.toJson(),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -60,7 +63,7 @@ class AuthService {
   }) async {
     try {
       http.Response res = await http.post(
-        Uri.parse('$uri/api/user/login'),
+        Uri.parse('$uri/api/signin'),
         body: jsonEncode({
           'email':email,
           'password':password,
@@ -80,7 +83,7 @@ class AuthService {
           showSnackBar(context, 'Login Successfull !');
           Navigator.pushNamedAndRemoveUntil(
             context, 
-            HomePage.routeName, 
+            HomeScreen.routeName, 
             (route) => false);
         },
       );

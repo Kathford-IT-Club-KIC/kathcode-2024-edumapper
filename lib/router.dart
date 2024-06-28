@@ -7,10 +7,10 @@ import 'Screens/Auth/Sign Up/sign_up.dart';
 
 Route<dynamic>generateRoute(RouteSettings routeSettings){
   switch(routeSettings.name){
-    case HomePage.routeName:
+    case HomeScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_) => const HomePage()
+        builder: (_) => const HomeScreen()
       );
     case SignInScreen.routeName:
       return MaterialPageRoute(
