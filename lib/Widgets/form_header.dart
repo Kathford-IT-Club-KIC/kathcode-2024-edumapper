@@ -18,9 +18,11 @@ class AppFormHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(TAppImages.logo, 
-            width:250,
-            height: 150,
+          Center(
+            child: Image.asset(TAppImages.logo, 
+              width:250,
+              height: 150,
+            ),
           ),
           const SizedBox(
             height:TAppHeight.sizedboxHeight
