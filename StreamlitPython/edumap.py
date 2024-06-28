@@ -123,15 +123,24 @@ def profile_view(loggedinuser):
         
         area = user['area']
         district = user['district']
-        location = f"{area}, {district}, Nepal"
-        geocode_result = geocode_with_retry(loc, location)
+        location = geocode_with_retry(loc, f"{area},{district} , Nepal")
+        # geocode_result = geocode_with_retry(loc, location)
 
-        if geocode_result:
-            latitude = geocode_result.latitude
-            longitude = geocode_result.longitude
+        if location:
+            latitude = location.latitude
+            longitude = location.longitude
             distance = geodesic((user_latitude, user_longitude), (latitude, longitude)).km
             user['distance'] = distance
             nearby_users.append(user)
+        else:
+            st.write("Failed to geocode user location")
+            return
+        # if geocode_result:
+        #     latitude = geocode_result.latitude
+        #     longitude = geocode_result.longitude
+        #     distance = geodesic((user_latitude, user_longitude), (latitude, longitude)).km
+        #     user['distance'] = distance
+        #     nearby_users.append(user)
 
     # Sort users by distance
     nearby_users.sort(key=lambda x: x['distance'])
