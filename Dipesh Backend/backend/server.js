@@ -17,6 +17,10 @@ connectDB();
 
 //api endpoints
 app.use("/api/user",userRouter)
+app.use("/api/post", postRouter)
+app.use("/api",Searchrouter)
+
+
 
 app.get("/", (req, res) => {
     res.send("API Working")
