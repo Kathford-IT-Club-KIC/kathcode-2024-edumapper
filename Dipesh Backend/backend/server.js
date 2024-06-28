@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import { connectDB } from "./config/db.js"
 import userRouter from "./Routes/userRouter.js"
+import Searchrouter from "./Routes/SearchRoutes.js";
 
 
 const app = express();
@@ -15,13 +16,18 @@ connectDB();
 
 //api endpoints
 app.use("/api/user",userRouter)
+app.use("/api",Searchrouter)
+
 
 app.get("/", (req, res) => {
     res.send("API Working")
     
 })
 
+// Routes
+// const searchController = require('./controllers/searchController');
 
+// app.get('/search', searchController.searchProducts);
 
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`)

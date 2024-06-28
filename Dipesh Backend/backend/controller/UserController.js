@@ -83,5 +83,44 @@ const registerUser = async (req, res) => {
     }
     
 }
+const updateUser = async (req, res) => {
+    const { id } = req.params;
+    const { name, password, email, district, area, qualification } = req.body;
+    try {
+        const user = await userModel.findById(id);
 
-export {loginUser,registerUser}
+        if (!user) {
+            return res.json({ success: false, message: "User Not Found" });
+        }
+
+        // validating email if it's being updated
+        if (email && !validator.isEmail(email)) {
+            return res.json({ success: false, message: "Enter a valid Email" });
+        }
+
+        if (password && password.length < 8) {
+            return res.json({ success: false, message: "Enter a strong password" });
+        }
+
+        // updating user's password if provided
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        // updating other fields if provided
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (district) user.district = district;
+        if (area) user.area = area;
+        if (qualification) user.qualification = qualification;
+
+        const updatedUser = await user.save();
+        res.json({ success: true, user: updatedUser });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error" });
+    }
+}
+
+export {loginUser,registerUser,updateUser}
