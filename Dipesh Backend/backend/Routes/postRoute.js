@@ -1,11 +1,11 @@
 import express from 'express';
-import { addPost,listPost,removePost } from '../controller/postController.js';
+import { addPost, listPostByDate, removePost } from '../controller/postController.js';
 
 
 const postRouter = express.Router()
 
 postRouter.post("/add", addPost)
-postRouter.get("/list",listPost)
-postRouter.delete("/remove",removePost)
+postRouter.get("/list", listPostByDate)
+postRouter.delete("/remove", removePost)
 
 export default postRouter;
