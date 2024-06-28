@@ -102,7 +102,18 @@ def Login():
             submitted=sub_column2.form_submit_button('Login',use_container_width=True)
         with col2:
             if submitted:
-                pass 
+                for item in collection.find({},{'_id':0}):
+                    if email in item['email'] and password in item['password']:
+                        st.session_state.isloggedIn=True
+                        st.session_state.statusAction='pre'
+                        st.success('Login successfull')
+                        st.rerun()
+                        break
+                else:
+                    st.error('Invalid Credentials')
+                    st.session_state.isloggedIn=False
+                    st.session_state.statusAction='Login'
+                    st.rerun()
               
     
 
