@@ -4,7 +4,7 @@ const postSchema = new mongoose.Schema({
     name: { type: String },
     description: { type: String,required:true },
     image: { type: String, required: true},
-    // {timeseries}
+    // {timestamp:true}
     
 })
 
