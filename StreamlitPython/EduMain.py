@@ -4,6 +4,12 @@ import Home
 from dbconn import *
 
 
+st.set_page_config(
+    page_icon='assets/edumap.png',
+    page_title='EduMap- Connecting the Educators Worldwide',
+    layout='wide'
+)
+
 # Ensure userStatus is set in session state
 if 'userStatus' not in st.session_state:
     st.session_state.userStatus = False
