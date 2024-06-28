@@ -20,11 +20,13 @@ const addPost = async (req, res) => {
 }
 
 const listPostByDate = async (req, res) => {
-    const { postedDate } = req.query;
+    const { date } = req.body;
 
-    if (!postedDate) {
-        return res.status(400).json({ success: false, message: 'Posted date is required' });
+    if (!date) {
+        return res.status(400).json({ success: false, message: 'Posted date is required in the request body' });
     }
+
+    const postedDate = new Date(date);  // Convert 'date' string to Date object
 
     const startOfDay = new Date(postedDate);
     startOfDay.setHours(0, 0, 0, 0);
@@ -34,13 +36,14 @@ const listPostByDate = async (req, res) => {
 
     try {
         const posts = await postModel.find({
-            createdAt: { $gte: startOfDay, $lte: endOfDay }
+            // createdAt: { $gte: startOfDay, $lte: endOfDay }
         });
         res.json({ success: true, posts });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
 
 
 const removePost = async (req, res) => {
