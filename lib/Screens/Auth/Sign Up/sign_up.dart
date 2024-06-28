@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:hackathon_project/Screens/Home%20Page/home_page.dart';
+import 'package:hackathon_project/Services/auth_services.dart';
 import 'package:hackathon_project/Widgets/form.dart';
 import 'package:hackathon_project/Widgets/form_footer.dart';
 import 'package:hackathon_project/constants/height.dart';
@@ -16,16 +16,27 @@ class SignUpScreen extends StatefulWidget {
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen
-> {
+class _SignUpScreenState extends State<SignUpScreen>{
   final _signUpFormKey = GlobalKey<FormState>();
+  final AuthService authService  = AuthService();
   final TextEditingController _emailController= TextEditingController();
   final TextEditingController _passwordController= TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _districtController = TextEditingController();
   final TextEditingController _areaController = TextEditingController();
   final TextEditingController _qualificationController = TextEditingController();
-  
+
+  void signUpUser(){
+    authService.signUpUser(
+      context: context,
+      email: _emailController.text,
+      password: _passwordController.text, 
+      name: _usernameController.text, 
+      district: _districtController.text, 
+      area: _areaController.text
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -56,13 +67,14 @@ class _SignUpScreenState extends State<SignUpScreen
                           const SizedBox(height: TAppHeight.formheight),
                           AppForm(controller: _qualificationController, hintText: 'Qualification',), 
                           const SizedBox(height: TAppHeight.formheight),
-                          AppElevatedButton(text: 'Sign Up', onTap: (){
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              HomePage.routeName,
-                              (route) => false,
-                            );
-                          }),
+                          AppElevatedButton(
+                            text: 'Sign Up',
+                            onTap: (){
+                              if (_signUpFormKey.currentState!.validate()){
+                                signUpUser();
+                              }
+                            }
+                          ),
                           const SizedBox(height: TAppHeight.formheight,),
                           FormFooter(context, text: "Sign In With Google", onPressed: (){}, yesaccount: "Already Have an Account ? ", option: "Login")
                         ],
