@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hackathon_project/App%20Styles/ColorStyle/colors.dart';
 import 'package:hackathon_project/App%20Styles/Text%20Style/text_style.dart';
 import 'package:hackathon_project/Screens/Auth/Sign%20In/sign_in.dart';
-import 'package:hackathon_project/Screens/Home%20Page/home_page.dart';
 import 'package:hackathon_project/constants/texts.dart';
 import 'package:hackathon_project/utils/elevated_button.dart';
 import 'package:hackathon_project/utils/outlined_button.dart';
 
 import '../../constants/images.dart';
+import '../Auth/Sign Up/sign_up.dart';
 
 class FirstScreen extends StatefulWidget {
   const FirstScreen({super.key});
@@ -51,9 +51,14 @@ class _FirstScreenState extends State<FirstScreen> {
                     })
                   ),
                   const SizedBox(width: 20,),
-                  Expanded(child: AppOutlinedButton(text: "Sign Up", onTap: (){
-                    Navigator.pushNamed(context, HomePage.routeName);
-                  }))
+                  Expanded(
+                    child: AppOutlinedButton(
+                      text: "Sign Up",
+                      onTap: (){
+                        Navigator.pushNamed(context, SignUpScreen.routeName);
+                      }
+                    )
+                  )
                 ],
               ),
             )
