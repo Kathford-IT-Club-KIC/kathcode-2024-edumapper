@@ -43,7 +43,7 @@ app.*.map.json
 /android/app/release
 #To be updated
 
-assets
+
 ios
 linux
 test
