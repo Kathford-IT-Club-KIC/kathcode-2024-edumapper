@@ -1,9 +1,15 @@
 import streamlit as st 
 import base64
-
-
+from dbconn import *
+from datetime import datetime
 
 def HomeUI(loggedInUser):
+    email = loggedInUser
+    for item in collection.find({},{'_id':0}):
+        if email in item['email']:
+            User = item
+            break
+    
     with open("assets/edumap.png", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
 
@@ -78,7 +84,23 @@ def HomeUI(loggedInUser):
         post=st.text_area('User Post',label_visibility="collapsed",placeholder='Arbine le Vanxa aile')
         col1,col2=st.columns([1,4])
         col1.button('Post',use_container_width=True)
-         
+        if col1.button:
+            
+
+            # Get the current date and time
+            current_date_time = datetime.now()
+
+            # Extract the current date
+            current_date = current_date_time.date()
+            current_date = str(current_date)
+            data={
+                'name':User['name'],
+                'email':User['email'],
+                'description':post,
+                'date':current_date
+            }
+            postinfo.insert_one(data)
+            st.success('Post successfull')  
         
     with col3.container(border=True,height=200):
         pass
