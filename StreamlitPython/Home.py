@@ -2,6 +2,17 @@ import streamlit as st
 import base64
 from dbconn import *
 from datetime import datetime
+import time 
+
+
+with open("assets/dummyUser.png", "rb") as image_file:
+    encoded_string = base64.b64encode(image_file.read()).decode()
+
+
+
+# post_html_template = 
+
+
 
 def HomeUI(loggedInUser):
     email = loggedInUser
@@ -9,7 +20,7 @@ def HomeUI(loggedInUser):
         if email in item['email']:
             User = item
             break
-    
+
     with open("assets/edumap.png", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
 
@@ -40,7 +51,7 @@ def HomeUI(loggedInUser):
         </style>
         <div class="header">
             <img src="data:image/png;base64,{encoded_string}" alt="EduMap Logo"/>
-            <h1>Connecting the Learners Worldwide</h1>
+            <h1>EduMap</h1>
         </div>
         <div style="margin-top: 70px;"></div>
     """, unsafe_allow_html=True)
@@ -53,7 +64,7 @@ def HomeUI(loggedInUser):
             
         #SET username from database 
         
-        username='Mukesh Prajapati'
+        username=User['name']
         
         st.write(f"""
             <div style='display: flex;
@@ -77,32 +88,120 @@ def HomeUI(loggedInUser):
             </div>
         """, unsafe_allow_html=True)
 
-        pass
+    user_post='Post here '
         
-    with col2.container(border=True,height=200):
-        #Creating post 
-        post=st.text_area('User Post',label_visibility="collapsed",placeholder='Arbine le Vanxa aile')
-        col1,col2=st.columns([1,4])
-        col1.button('Post',use_container_width=True)
-        if col1.button:
+    with col2:
+        s_col1, s_col2=st.columns([12,1])
+        username=s_col1.text_input('Search',label_visibility='collapsed', placeholder='Search...')
+        s_col2.button(':mag:','Search',use_container_width=True)
+        with st.container(border=False,height=375):
+            st.write(f'''
+                <style>
+                    .body {{
+                        font-family: Arial, sans-serif;
+                        background-color: #f0f2f5;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                    }}
+                    .post-container {{
+                        width: 500px;
+                        background-color: #fff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                        padding: 16px;
+                        margin: 16px;
+                    }}
+                    .user {{
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 12px;
+                    }}
+                    .user-image img {{
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        margin-right: 12px;
+                    }}
+                    .user-name span {{
+                        font-weight: bold;
+                        font-size: 14px;
+                        color: #333;
+                    }}
+                    .caption-text p {{
+                        font-size: 14px;
+                        color: #333;
+                        margin: 0 0 12px;
+                    }}
+                    .button {{
+                        text-align: center;
+                        margin-top: 12px;
+                    }}
+                    .contact-me {{
+                        background-color: #1877f2;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 8px 16px;
+                        font-size: 14px;
+                        cursor: pointer;
+                    }}
+                    .contact-me:hover {{
+                        background-color: #165db5;
+                    }}
+                    .contact-me:active {{
+                        background-color: #154a93;
+                    }}
+                </style>
+
+                <div class="post-container">
+                    <div class="user">
+                        <div class="user-image">
+                            <img src="data:image/png;base64,{encoded_string}" alt="User Image">
+                        </div>
+                        <div class="user-name">
+                            <span>{User['name']}</span>
+                        </div>
+                    </div>
+
+                        {user_post} 
+                    
+                </div>
+            ''', unsafe_allow_html=True)
+            ss_col1,ss_col2,ss_col3=st.columns([0.75,12,1.5])
+            with ss_col2.popover('Contact Me',use_container_width=True):
+                message=st.text_input('Your Message',placeholder='Your Message',label_visibility='collapsed')
+                if st.button('Send Message :arrow_right:','send_botton',use_container_width=True):
+                    st.success('Message Sent')
+                    
             
-
-            # Get the current date and time
-            current_date_time = datetime.now()
-
-            # Extract the current date
-            current_date = current_date_time.date()
-            current_date = str(current_date)
-            data={
-                'name':User['name'],
-                'email':User['email'],
-                'description':post,
-                'date':current_date
-            }
-            postinfo.insert_one(data)
-            st.success('Post successfull')  
+         
         
-    with col3.container(border=True,height=200):
-        pass
+    with col3.container(border=False,height=200):
+        with st.form('PostForm',clear_on_submit=True,border=False):
+                #Creating post 
+                post=st.text_area('User Post',label_visibility="collapsed",placeholder='Create a post...')
+                # col1,col2=st.columns([1,4])
+                if st.form_submit_button('Post',use_container_width=True):            
+
+                    # Get the current date and time
+                    current_date_time = datetime.now()
+
+                    # Extract the current date
+                    current_date = current_date_time.date()
+                    current_date = str(current_date)
+                    data={
+                        'name':User['name'],
+                        'email':User['email'],
+                        'description':post,
+                        'date':current_date
+                    }
+                    postinfo.insert_one(data)
+                    successPlaceholder=st.empty()
+                    successPlaceholder.success('Post successfull') 
+                    time.sleep(3)
+                    successPlaceholder.empty() 
 
          
