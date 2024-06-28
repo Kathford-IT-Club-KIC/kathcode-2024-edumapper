@@ -1,5 +1,6 @@
 import streamlit as st
 import base64
+from dbconn import *
 
 # Ensure userStatus is set in session state
 if 'userStatus' not in st.session_state:
@@ -44,19 +45,39 @@ def signUp():
     col1,col2,col3=st.columns([1,5,1])
     with col2.form('SignUp Form', clear_on_submit=False,border=True):
         st.write('''<p style='margin-bottom: 5px; font-size: 16px; font-family: sans-serif; color: green; font-weight: bold'> Sign Up</p>''', unsafe_allow_html=True)
-        fullName=st.text_input('Full Name ')
+        name=st.text_input('Full Name ')
         email=st.text_input('Email ')
         password=st.text_input('Password',type='password')
         district=st.text_input('District')
         area=st.text_input('Area')
         qualification=st.text_area('Qualifications',height=10)
         if st.form_submit_button('Register',use_container_width=True):
-            pass 
+            nameexist = False
+            for item in collection.find({},{'_id':0}):
+                if email in item['email']:
+                    st.write('Email already exists in the database')
+                    nameexist = True
+                    break    
+            
+            #Prepare data to insert
+            if nameexist == False:
+                data = {
+                    'name': name,
+                    'email': email,
+                    'password': password,
+                    'district': district,
+                    'area': area,
+                    'qualification': qualification
+                }
+                # Insert data into MongoDB
+                collection.insert_one(data)
+                st.write('Registration successfull')
 
 def Login():
     st.write('''<p style='margin-bottom: 5px; font-size: 16px; font-family: sans-serif; color: green; font-weight: bold'> Login</p>''', unsafe_allow_html=True)
     # Add login form inputs here (e.g., username, password, etc.)
     st.form_submit_button('Login')
+        
 
 if __name__ == '__main__':
     if not st.session_state.userStatus:
