@@ -1,15 +1,16 @@
 import postModel from "../models/postModel.js";
+import userModel from "../models/userModel.js";
 // import fs from "fs"
 
 const addPost = async (req, res) => {
     // let image_filename = `${req.file.filename}`;
-
-    const post = new postModel({
-        name: req.body.name,
-        description: req.body.description,
-        // image: image_filename
-    })
-    try {
+        const post = new postModel({
+            name: req.body.name,
+            description: req.body.description,
+            // image: image_filename
+        })
+        try {
+        
         const savedPost = await post.save()
         res.json({ success: true, message: "Post Added", post: savedPost })
     } catch (error) {

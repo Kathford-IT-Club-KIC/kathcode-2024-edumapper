@@ -2,7 +2,7 @@ import Product from '../models/postModel.js'; // Update the import statement to 
 
 // Search Controller
 export const searchProducts = async (req, res) => {
-    const { query } = req.query;
+    const { query } = req.body.name;
 
     if (!query) {
         return res.status(400).json({ error: 'Query parameter is required' });
