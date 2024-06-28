@@ -9,3 +9,4 @@ postRouter.get("/list", listPost)
 postRouter.post("/remove", removePost)
 
 export default postRouter;
+
