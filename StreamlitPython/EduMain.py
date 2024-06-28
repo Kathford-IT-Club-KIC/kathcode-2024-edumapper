@@ -13,9 +13,9 @@ if 'statusAction' not in st.session_state:
     
 if 'isloggedIn' not in st.session_state:
     st.session_state.isloggedIn=False 
-
-# def setStatusTrue():
-#     st.session_state.userStatus = True
+    
+if 'loggedInEmail' not in st.session_state:
+    st.session_state.loggedInEmail = None 
 
 def login_clicked():
     st.session_state.userStatus=True
@@ -107,14 +107,14 @@ def Login():
                         st.session_state.isloggedIn=True
                         st.session_state.statusAction='pre'
                         st.success('Login successfull')
+                        st.session_state.loggedInEmail=email
                         st.rerun()
+                    
+                    else:
+                        st.error('Invalid Credentials')
+                        st.session_state.isloggedIn=False
+                        st.session_state.statusAction='Login'
                         break
-                else:
-                    st.error('Invalid Credentials')
-                    st.session_state.isloggedIn=False
-                    st.session_state.statusAction='Login'
-                    st.rerun()
-              
     
 
 if __name__ == '__main__':
@@ -129,4 +129,4 @@ if __name__ == '__main__':
             preHome_UI()
         
     if st.session_state.isloggedIn:
-        Home.HomeUI()
+        Home.HomeUI(st.session_state.loggedInEmail)
