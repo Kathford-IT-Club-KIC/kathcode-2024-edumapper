@@ -8,7 +8,7 @@ const addPost = async(req,res) => {
         name:req.body.name,
         description:req.body.description,
         image:image_filename
-    })
+    })  
     try {
           const savedPost=await post.save()
         res.json({success:true,message:"Post Added",post:savedPost})
@@ -34,7 +34,7 @@ const listPost = async(req,res) => {
 const removePost = async(req,res) => {
     try {
         const post = await postModel.findByIdAndDelete(req.body.id)
-        fs.unlinkSync(`public/${post.image}`,()=> { })
+        fs.unlinkSync(`uploads/${post.image}`,()=> { })
         await postModel.findByIdAndDelete(req.body.id)
 
         res.json({success:true,message:"Post Deleted"})
@@ -42,3 +42,6 @@ const removePost = async(req,res) => {
         res.json({success:false,message:error.message})
     }
 }
+
+
+export {addPost,listPost,removePost}
