@@ -4,6 +4,7 @@ import 'package:hackathon_project/Screens/Home%20Page/home_page.dart';
 import 'package:hackathon_project/Widgets/form.dart';
 import 'package:hackathon_project/constants/height.dart';
 import 'package:hackathon_project/constants/texts.dart';
+import '../../../Widgets/form_footer.dart';
 import '../../../Widgets/form_header.dart';
 import '../../../utils/elevated_button.dart';
 
@@ -48,7 +49,9 @@ class _SignInScreenState extends State<SignInScreen
                             HomePage.routeName,
                             (route) => false,
                           );
-                        })
+                        }),
+                        const SizedBox(height: TAppHeight.formheight,),
+                        FormFooter(context, text: "Sign In With Google", onPressed: (){}, yesaccount: "Don't Have an Account ? ", option: "Sign Up")
                       ],
                     )
                   )

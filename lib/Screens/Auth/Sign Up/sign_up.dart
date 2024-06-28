@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackathon_project/Screens/Home%20Page/home_page.dart';
 import 'package:hackathon_project/Widgets/form.dart';
+import 'package:hackathon_project/Widgets/form_footer.dart';
 import 'package:hackathon_project/constants/height.dart';
 import 'package:hackathon_project/constants/texts.dart';
 import '../../../Widgets/form_header.dart';
@@ -51,7 +52,6 @@ class _SignUpScreenState extends State<SignUpScreen
                           const SizedBox(height: TAppHeight.formheight),
                           AppForm(controller: _districtController, hintText: 'District',),
                           const SizedBox(height: TAppHeight.formheight),
-                          const SizedBox(height: TAppHeight.formheight),
                           AppForm(controller: _areaController, hintText: 'Area',),
                           const SizedBox(height: TAppHeight.formheight),
                           AppForm(controller: _qualificationController, hintText: 'Qualification',), 
@@ -62,7 +62,9 @@ class _SignUpScreenState extends State<SignUpScreen
                               HomePage.routeName,
                               (route) => false,
                             );
-                          })
+                          }),
+                          const SizedBox(height: TAppHeight.formheight,),
+                          FormFooter(context, text: "Sign In With Google", onPressed: (){}, yesaccount: "Already Have an Account ? ", option: "Login")
                         ],
                       )
                     )
