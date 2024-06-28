@@ -7,7 +7,7 @@ const User = require("../models/user");
 const authRouter = express.Router();
 
 authRouter.post("/api/signup" , async (req ,res)=>{
-    const {name , email , password } = req.body;
+    const {name , email , password, district, area, qualification } = req.body;
     const existingUser = await User.findOne({email});
     try{
         if (existingUser){
@@ -16,11 +16,14 @@ authRouter.post("/api/signup" , async (req ,res)=>{
         }
 
         const hashedPassword = await bcryptjs.hash(password , 8);
-
+        console.log(district, area, qualification);
         let user = new User({
             email,
             password : hashedPassword,
             name,
+            district,
+            area,
+            qualification
         })
         user = await user.save();
         res.json(user);
@@ -50,6 +53,10 @@ authRouter.post("/api/signin",async (req,res)=>{
         .json({error : e.message});
     }
 });
+
+authRouter.get('/', async(req,res)=>{
+    return res.send("Hello world");
+})
 
 module.exports = authRouter
 

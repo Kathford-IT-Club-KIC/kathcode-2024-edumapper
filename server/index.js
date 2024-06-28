@@ -1,18 +1,20 @@
 const express = require("express");
 const cors = require('cors');
 const mongoose = require("mongoose");
+const bodyParser = require('body-parser');
 
 const app = express();
 
 const authRouter = require("./routes/auth");
 
 // Your MongoDB connection string
-const DB = "mongodb+srv://mukeshpr443:mukesh@cluster0.4ycn4qv.mongodb.net/?appName=Cluster0";
+const DB = "mongodb+srv://Aabro098:Aabro098@clone.t585tks.mongodb.net/?retryWrites=true&w=majority&appName=Clone";
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(authRouter);
+app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose.connect(DB, {

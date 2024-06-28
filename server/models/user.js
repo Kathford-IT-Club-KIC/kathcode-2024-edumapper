@@ -28,13 +28,18 @@ const userSchema = mongoose.Schema({
             message: 'Enter a long password',
         }
     },
-    address:{
-        default:'',
+    district:{
         type:String
     },
-    type:{
+    area:{
+        type:String
+    },
+    qualification:{
+        type:String
+    },
+    photo: {
         type: String,
-        default:'user'
+        default: 'assets/images/profile.jpeg' 
     }
 });
 
