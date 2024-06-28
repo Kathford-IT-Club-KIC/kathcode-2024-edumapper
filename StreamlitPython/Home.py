@@ -3,12 +3,23 @@ import base64
 from dbconn import *
 from datetime import datetime
 import time 
+import nearby
+
 
 count = 0
 with open("assets/dummyUser.png", "rb") as image_file:
     encoded_string = base64.b64encode(image_file.read()).decode()
 
 
+def logOut():
+    # st.session_state.isLoggedIn=False
+    # st.session_state.loggedInEmail=None 
+    # st.session_state.userStatus=False  
+    # # st.session_state.statusAction='pre'
+    # preHome_UI()
+    # del st.session_state
+    # st.session_state={}
+    pass
 
 def call_post(user_name,post_description,count):
     st.write(f'''
@@ -141,12 +152,11 @@ def HomeUI(loggedInUser):
     
     col1,col2,col3=st.columns([2.5,5,2.5])
 
-    with col1.container(border=False,height=200):
+    with col1.container(border=False,height=375):
         with open("assets/dummyUser.png", "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
             
         #SET username from database 
-        
         username=User['name']
         
         st.write(f"""
@@ -164,14 +174,21 @@ def HomeUI(loggedInUser):
             height: 50px;
             width: 50px;
             margin-right: 10px;" />
-                <p style='margin: 0;
-            font-size: 16px;
-            color: green;
-            font-weight: bold;'> {username}</p>
+                <div style='display: flex; flex-direction: column;'>
+                    <p style='margin: 0; font-size: 16px; color: green; font-weight: bold;'> {username}</p>
+                    <p style='margin: 5px 0 0 0; font-size: 13px; color: grey; font-weight: bold;'> {User['area']}</p>
+                </div>
             </div>
         """, unsafe_allow_html=True)
-
-    user_post='Post here '
+        
+        st.write('<br>',unsafe_allow_html=True)
+        
+        if st.button('Nearby',key='NearbyButton',use_container_width=True):
+            nearby.main(loggedInUser)
+        if st.button('Settings', key='settings',use_container_width=True):
+            pass 
+        st.markdown('[LogOut](http://localhost:8501)')
+        # st.button('Log Out',on_click=logOut,use_container_width=True)
         
     with col2:
         s_col1, s_col2=st.columns([12,1])
@@ -211,4 +228,4 @@ def HomeUI(loggedInUser):
                     time.sleep(3)
                     successPlaceholder.empty() 
 
-         
+
