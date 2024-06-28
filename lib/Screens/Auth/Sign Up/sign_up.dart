@@ -32,7 +32,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       name: _usernameController.text,
       district: _districtController.text,
       area: _areaController.text,
-      context: context,
+      qualification: _qualificationController.text,
+      context: context, 
+      photo: '',
     );
   }
 

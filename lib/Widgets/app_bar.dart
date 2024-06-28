@@ -9,7 +9,7 @@ class TAppbar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return SliverAppBar(
       backgroundColor: Colors.grey[100],
       title:const Text("EduMapper",style: TextStyle(
