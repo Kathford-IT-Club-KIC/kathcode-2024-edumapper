@@ -1,16 +1,29 @@
-import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  static const routeName = "/home";
-  const HomePage({super.key});
+import 'package:flutter/material.dart';
+import 'package:hackathon_project/Features/create_post.dart';
+
+import '../../Widgets/app_bar.dart';
+
+class HomeScreen extends StatefulWidget {
+  static const String routeName = "/home";
+  const HomeScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          TAppbar(),
+          SliverToBoxAdapter(
+            child: CreatePostContainer()
+          )
+        ],
+      )
+    );
   }
 }

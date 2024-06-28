@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hackathon_project/App%20Styles/ColorStyle/colors.dart';
 
 class AppForm extends StatelessWidget {
   final TextEditingController controller;
@@ -17,21 +16,12 @@ class AppForm extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(
-            color: TAppColor.buttonColor
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(
-            color: Colors.black
-          ),
-        ),
       ),
-      validator: (value){
-        return 'Error missing value';
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Value missing';
+        }
+        return null;
       },
     );
   }
