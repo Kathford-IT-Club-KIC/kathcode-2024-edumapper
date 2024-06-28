@@ -6,6 +6,6 @@ const postRouter = express.Router()
 
 postRouter.post("/add", addPost)
 postRouter.get("/list", listPostByDate)
-postRouter.delete("/remove", removePost)
+postRouter.post("/remove", removePost)
 
 export default postRouter;
