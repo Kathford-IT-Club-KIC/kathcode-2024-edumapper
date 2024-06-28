@@ -3,85 +3,155 @@ from streamlit_folium import st_folium
 from streamlit_folium import folium  
 import branca 
 from geopy.geocoders import Nominatim
+from dbconn import * 
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
+import time 
+from geopy.distance import geodesic
+import base64
 
+def geocode_with_retry(loc, address, max_retries=3):
+    retries = 0
+    while retries < max_retries:
+        try:
+            return loc.geocode(address, timeout=10)
+        except (GeocoderTimedOut, GeocoderUnavailable):
+            retries += 1
+            time.sleep(1)
+    return None
 
-
-def MapView(User):
-    loc = Nominatim(user_agent="GetLoc")
+def MapView(Usere):
+    email = Usere
+    User = None
+    for item in collection.find({}, {'_id': 0}):
+        if email == item['email']:
+            User = item
+            break
     
-    st.write(User)
-    pass 
-
-
-def profileView(User):
-    pass 
-
-'''def map_lat_long(data):
-    m = folium.Map(location=[27.724502,85.339213], zoom_start=10,height=300,width=400,control_scale=True,zoom_control=True) 
-    for location in data:
-        tutor_details = ""
-        tutor_details = []
-        case_detail = f"""
-                    <details>
-                        <summary style="cursor: pointer; margin-bottom: 10px;">Case ID: {case[0]}</summary>
-                        <div style="padding: 5px;">
-                            <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px;">
-                                <p><strong>Date:</strong> {case[1]}</p>
-                                <p><strong>Nature of Case:</strong> {case[2]}</p>
-                                <p><strong>Description:</strong> {case[3]}</p>
-                                <p><strong>Status:</strong> {case[4]}</p>
-                            </div>
-                        </div>
-                    </details>
-                    """
-        case_details.append(case_detail)
-        all_case_details = "\n".join(case_details)
+    if User:
+        loc = Nominatim(user_agent="GetLoc")
+        area = str(User['area'])
+        district = str(User['district'])
+        getLoc = geocode_with_retry(loc, f"{area},{district} , Nepal")
+        if getLoc:
+            latitude = getLoc.latitude
+            longitude = getLoc.longitude
         else:
-            all_case_details = "<p>No cases found at this location</p>"
-        iframe = branca.element.IFrame(html=all_case_details, width=250, height=150)
+            latitude, longitude = 27.6800062, 85.3857303  # Default location if geocoding fails
+    
+    # Retrieve user data from MongoDB collection
+    users = list(collection.find({}, {'_id': 0}))
+    
+    # Initialize a Folium map
+    initial_location = [latitude,longitude]  # Default location (Kathmandu, Nepal)
+    # initial_location = [27.6800062, 85.3857303]  # Default location (Kathmandu, Nepal)
+    m = folium.Map(location=initial_location, zoom_start=20, height=200, width=400, control_scale=True, zoom_control=True)
+
+    # Dictionary to store user details by location
+    location_user_details = {}
+
+    # Iterate through all users to get their locations
+    for user in users:
+        area = user['area']
+        district = user['district']
+        location = f"{area}, {district}, Nepal"
+        geocode_result = geocode_with_retry(loc, location)
+
+        if geocode_result:
+            latitude = geocode_result.latitude
+            longitude = geocode_result.longitude
+            lat_long_key = (latitude, longitude)
+            
+            user_detail = f"""
+            <details>
+                <summary style="cursor: pointer; margin-bottom: 10px;">Name: {user['name']}</summary>
+                <div style="padding: 5px;">
+                    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px;">
+                        <p><strong>Email:</strong> {user['email']}</p>
+                        <p><strong>Area:</strong> {user['area']}</p>
+                        <p><strong>District:</strong> {user['district']}</p>
+                        <p><strong>Qualification:</strong> {user['qualification']}</p>
+                    </div>
+                </div>
+            </details>
+            """
+
+            # Aggregate user details by location
+            if lat_long_key in location_user_details:
+                location_user_details[lat_long_key].append(user_detail)
+            else:
+                location_user_details[lat_long_key] = [user_detail]
+
+    # Add markers to the map
+    for (latitude, longitude), user_details in location_user_details.items():
+        all_user_details = "\n".join(user_details)
+        iframe = branca.element.IFrame(html=all_user_details, width=250, height=150)
         popup = folium.Popup(iframe, max_width=500)
-        folium.Marker([location[0],location[1]],popup=popup).add_to(m)
-    all_lat = ", ".join(str(location[0]) for location in data)
-    all_lng = ", ".join(str(location[1]) for location in data)
-    html_content = f"""
-            <div style="display: flex; justify-content: center; background-color: #f0f0f0; padding: 5px; transparency: 50%; border-radius: 0px; align-items: center;">
-                <div style="display: inline-block; margin-right: 50px; text-align: center;">
-                    <p style="color: #333333; margin-top: 8px;  line-height: 0.5">Total Cases: {total_cases[0]}</p>
-                </div>
-                <div style="display: inline-block; margin-right: 50px; text-align: center;">
-                    <p style="color: #333333; margin-top: 8px;  line-height: 0.5">Ongoing Cases: {ongoing_cases[0]}</p>
-                </div>
-                <div style="display: inline-block; margin-right: 50px; text-align: center;">
-                    <p style="color: #333333; margin-top: 8px; line-height: 0.5">Solved Cases: {solved_cases[0]}</p>
-                </div>
-                <div style="display: inline-block; margin-right: 50px; text-align: center;">
-                    <p style="color: #333333; margin-top: 8px; line-height: 0.5">Closed Cases: {closed_cases[0]}</p>
-                </div>
+        folium.Marker([latitude, longitude], popup=popup).add_to(m)
+    
+    # Display the map in Streamlit
+    st_folium(m, height=200, use_container_width=True, returned_objects=[])
+
+
+def profile_view(loggedinuser):
+    # Get the logged-in user details
+    User = None
+    for item in collection.find({}, {'_id': 0}):
+        if loggedinuser == item['email']:
+            User = item
+            break
+
+    # Geocode the logged-in user's location
+    loc = Nominatim(user_agent="GetLoc")
+    area = str(User['area'])
+    district = str(User['district'])
+    getLoc = geocode_with_retry(loc, f"{area},{district} , Nepal")
+    if getLoc:
+        user_latitude = getLoc.latitude
+        user_longitude = getLoc.longitude
+    else:
+        st.write("Failed to geocode user location")
+        return
+
+    # Initialize a list to store nearby users' details
+    nearby_users = []
+
+    # Iterate through all users to get their locations
+    for user in collection.find({}, {'_id': 0}):
+        if user['email'] == loggedinuser:
+            continue  # Skip the logged-in user
+        
+        area = user['area']
+        district = user['district']
+        location = f"{area}, {district}, Nepal"
+        geocode_result = geocode_with_retry(loc, location)
+
+        if geocode_result:
+            latitude = geocode_result.latitude
+            longitude = geocode_result.longitude
+            distance = geodesic((user_latitude, user_longitude), (latitude, longitude)).km
+            user['distance'] = distance
+            nearby_users.append(user)
+
+    # Sort users by distance
+    nearby_users.sort(key=lambda x: x['distance'])
+
+    # Display the nearby users' details
+    for user in nearby_users:
+        user_image = "data:image/png;base64,..."  # Replace with the actual base64 encoded image
+        encoded_image = base64.b64encode(user_image).decode()
+        user_name = user['name']
+        distance = user['distance']
+        
+        user_detail_html = f"""
+        <div style='display: flex; align-items: center; margin-bottom: 20px;'>
+            <img src="{encoded_image}" height="50" style="border-radius: 50%; object-fit: cover; height: 50px; width: 50px; margin-right: 20px;" />
+            <div>
+                <p style='margin: 0; font-size: 16px; color: green; font-weight: bold;'>{user_name}</p>
+                <p style='margin: 0; font-size: 14px; color: grey;'>{distance:.2f} km away</p>
             </div>
+        </div>
+        """
+        st.write(user_detail_html, unsafe_allow_html=True)
 
-                """
 
-    st.markdown(html_content, unsafe_allow_html=True)
-    st_folium(m, use_container_width=True,height=400,returned_objects=[])
-
-def main(): 
-    st.write(f'<p style="color: blue; border-bottom: 1px solid white; margin-top: -50px; font-size: 30px; font-weight: bold">{db.PROJECT} - Case Mapping</p>', unsafe_allow_html=True)
-    conn=db.connect_db() 
-    db_cases=db.get_all(conn,"Select nature_of_case from nature_of_case where case_count>0")
-    try :
-        nature_of_case=[case[0] for case in db_cases]
-        filters=st.multiselect("Filter by Nature of Case",placeholder="Select Case Natures",options=nature_of_case,default=None)
-        st.write('<br>',unsafe_allow_html=True)
-        if filters:
-            filters_str = "'" + "', '".join(filters) + "'"
-            query = f"SELECT lat, lng FROM caseReports WHERE nature_of_case IN ({filters_str})"
-            map_lat_long(query,f"and nature_of_case IN ({filters_str})")
-        else:
-            map_lat_long("select lat, lng from caseReports") 
-    except Exception as e:
-        st.warning(f'Something went wrong: {e}')
-
-if __name__=="__main__":
-    main()
-
-'''
