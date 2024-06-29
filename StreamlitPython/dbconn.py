@@ -6,3 +6,5 @@ db = client.StreamlitDB
 collection = db.userinfo 
 
 postinfo = db.postinfo
+
+msginfo = db.message

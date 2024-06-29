@@ -3,6 +3,7 @@ import base64
 from dbconn import *
 from datetime import datetime
 import time 
+import nearby
 import edumap 
 
 
@@ -183,6 +184,7 @@ def HomeUI(loggedInUser):
 
         with st.popover('Appoint Tutor ', use_container_width=True):
             users = []
+            users_email = []
             user_details = {}
             for user in collection.find({}, {'_id': 0}):
                 if user['email'] == loggedInUser:
@@ -207,11 +209,27 @@ def HomeUI(loggedInUser):
             
             message=st.text_area('Remarks',height=50,label_visibility='collapsed',placeholder='Message')
             if st.button('Request',use_container_width=True):
-                pass 
+                for item in collection.find({},{'_id':0}):
+                    if tutor_name in item['name']:
+                        data={
+                            'receiver':item['email'],
+                            'sender':User['email'],
+                            'message':message,
+                        }
+                        msginfo.insert_one(data)
             
         with st.popover('Appointment Requests',use_container_width=True):
-            pass 
-        
+            for item in msginfo.find({},{'_id':0}):
+                if item['receiver']==User['email']:
+                    st.write(f"""
+                    <div style="padding: 5px;">
+                        <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px;">
+                            <p><strong>Sender:</strong> {item['sender']}</p>
+                            <p><strong>Message:</strong> {item['message']}</p>
+                        </div>
+                    </div>""", unsafe_allow_html=True) 
+                else:
+                    pass
         with st.popover('Feedback',use_container_width=True):
             pass
 
@@ -225,7 +243,7 @@ def HomeUI(loggedInUser):
         # s_col2.button(':mag:','Search',use_container_width=True)
         count = 0
         with st.container(border=True,height=550):
-            st.write('<p style="color: green; font-weight: bold; font-size: 20px; margin-bottom:-15px; text-align: center">Posts</p>',unsafe_allow_html=True)
+            st.write('<p style="color: green; font-weight: bold; font-size: 20px; margin-bottom:-15px; text-align: center">ShoutBoard</p>',unsafe_allow_html=True)
             for item in postinfo.find() :
                 count+=1
                 call_post(item['name'],item['description'],count)
