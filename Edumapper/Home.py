@@ -3,11 +3,10 @@ import base64
 from dbconn import *
 from datetime import datetime
 import time 
-import nearby
 import edumap 
 
 
-count = 0
+count = 0 # To generate unique keys for each post
 with open("assets/dummyUser.png", "rb") as image_file:
     encoded_string = base64.b64encode(image_file.read()).decode()
 

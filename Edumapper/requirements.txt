@@ -1,7 +1,0 @@
-streamlit
-streamlit_folium
-branca
-geopy.geocoder
-geopy.distance
-geopy.exc
-pymongo
