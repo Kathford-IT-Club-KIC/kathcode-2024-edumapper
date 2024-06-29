@@ -108,6 +108,7 @@ def Login():
             submitted=sub_column2.form_submit_button('Login',use_container_width=True)
         with col2:
             if submitted:
+                x=True
                 for item in collection.find({},{'_id':0}):
                     if email in item['email'] and password in item['password']:
                         st.session_state.isloggedIn=True
@@ -115,16 +116,17 @@ def Login():
                         st.success('Login successfull')
                         st.session_state.loggedInEmail=email
                         st.rerun()
-                    
                     else:
-                        st.error('Invalid Credentials')
-                        st.session_state.isloggedIn=False
-                        st.session_state.statusAction='Login'
-                        break
+                        x=False
+                if x==False:
+                    st.error('Invalid Credentials')
+                    st.session_state.isloggedIn=False
+                    st.session_state.statusAction='Login'
+                    
     
 
 if __name__ == '__main__':
-    if not st.session_state.userStatus:
+    if st.session_state.userStatus==False:
         preHome_UI()
     if st.session_state.isloggedIn==False:
         if st.session_state.statusAction == 'Login':
@@ -134,5 +136,5 @@ if __name__ == '__main__':
         if st.session_state.statusAction == 'pre':
             preHome_UI()
         
-    if st.session_state.isloggedIn:
+    if st.session_state.isloggedIn and st.session_state.loggedInEmail is not None:
         Home.HomeUI(st.session_state.loggedInEmail)

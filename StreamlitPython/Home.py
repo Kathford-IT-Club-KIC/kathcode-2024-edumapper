@@ -4,22 +4,13 @@ from dbconn import *
 from datetime import datetime
 import time 
 import nearby
+import edumap 
 
 
 count = 0
 with open("assets/dummyUser.png", "rb") as image_file:
     encoded_string = base64.b64encode(image_file.read()).decode()
 
-
-def logOut():
-    # st.session_state.isLoggedIn=False
-    # st.session_state.loggedInEmail=None 
-    # st.session_state.userStatus=False  
-    # # st.session_state.statusAction='pre'
-    # preHome_UI()
-    # del st.session_state
-    # st.session_state={}
-    pass
 
 def call_post(user_name,post_description,count):
     st.write(f'''
@@ -104,6 +95,11 @@ def call_post(user_name,post_description,count):
         if st.button('Send Message :arrow_right:',key=count*50,use_container_width=True):
             st.success('Message Sent')
 
+def logOut():
+    # Clear the session state
+    for key in st.session_state.keys():
+        del st.session_state[key]
+
 
 def HomeUI(loggedInUser):
     email = loggedInUser
@@ -182,32 +178,64 @@ def HomeUI(loggedInUser):
         """, unsafe_allow_html=True)
         
         st.write('<br>',unsafe_allow_html=True)
-        
-        if st.button('Nearby',key='NearbyButton',use_container_width=True):
-            nearby.main(loggedInUser)
-        if st.button('Settings', key='settings',use_container_width=True):
+
+        with st.popover('My Classes', use_container_width=True):
             pass 
-        st.markdown('[LogOut](http://localhost:8501)')
-        # st.button('Log Out',on_click=logOut,use_container_width=True)
+
+        with st.popover('Appoint Tutor ', use_container_width=True):
+            users = []
+            user_details = {}
+            for user in collection.find({}, {'_id': 0}):
+                if user['email'] == loggedInUser:
+                    continue  # Skip the logged-in user
+                users.append(user['name'])
+                user_details[user['name']] = user
+
+            # Select a tutor from the dropdown
+            tutor_name = st.selectbox('Select Tutor', options=users)
+
+            if tutor_name:
+                tutor = user_details[tutor_name]
+                st.write(f"""
+                <div style="padding: 5px;">
+                    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px;">
+                        <p><strong>Email:</strong> {tutor['email']}</p>
+                        <p><strong>Area:</strong> {tutor['area']}</p>
+                        <p><strong>District:</strong> {tutor['district']}</p>
+                        <p><strong>Qualification:</strong> {tutor['qualification']}</p>
+                    </div>
+                </div>""", unsafe_allow_html=True)
+            
+            message=st.text_area('Remarks',height=50,label_visibility='collapsed',placeholder='Message')
+            if st.button('Request',use_container_width=True):
+                pass 
+            
+        with st.popover('Appointment Requests',use_container_width=True):
+            pass 
+        
+        with st.popover('Feedback',use_container_width=True):
+            pass
+
+        if st.button('Log Out',on_click=logOut,use_container_width=True):
+            st.experimental_rerun()
+            
         
     with col2:
         s_col1, s_col2=st.columns([12,1])
-        username=s_col1.text_input('Search',label_visibility='collapsed', placeholder='Search...')
-        s_col2.button(':mag:','Search',use_container_width=True)
+        # username=s_col1.text_input('Search',label_visibility='collapsed', placeholder='Search...')
+        # s_col2.button(':mag:','Search',use_container_width=True)
         count = 0
-        with st.container(border=False,height=375):
+        with st.container(border=True,height=550):
+            st.write('<p style="color: green; font-weight: bold; font-size: 20px; margin-bottom:-15px; text-align: center">ShoutBoard</p>',unsafe_allow_html=True)
             for item in postinfo.find() :
                 count+=1
                 call_post(item['name'],item['description'],count)
                     
-            
-         
         
     with col3.container(border=False,height=200):
         with st.form('PostForm',clear_on_submit=True,border=False):
                 #Creating post 
                 post=st.text_area('User Post',label_visibility="collapsed",placeholder='Create a post...')
-                # col1,col2=st.columns([1,4])
                 if st.form_submit_button('Post',use_container_width=True):            
 
                     # Get the current date and time
@@ -227,5 +255,15 @@ def HomeUI(loggedInUser):
                     successPlaceholder.success('Post successfull') 
                     time.sleep(3)
                     successPlaceholder.empty() 
+                    
+    with col3:
+        st.write('<p style="color: green; font-weight: bold; font-size: 20px">Nearby Tutors</p>',unsafe_allow_html=True)
+        with st.container(border=True,height=300):
+            tab1,tab2=st.tabs(['MapView','Profile View'])
+            with tab1:
+                edumap.MapView(loggedInUser)
+            
+            with tab2:
+                edumap.profile_view(loggedInUser)
 
 
