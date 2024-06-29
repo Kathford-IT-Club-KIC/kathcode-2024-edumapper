@@ -226,7 +226,7 @@ def HomeUI(loggedInUser):
         # s_col2.button(':mag:','Search',use_container_width=True)
         count = 0
         with st.container(border=True,height=550):
-            st.write('<p style="color: green; font-weight: bold; font-size: 20px; margin-bottom:-15px; text-align: center">ShoutBoard</p>',unsafe_allow_html=True)
+            st.write('<p style="color: green; font-weight: bold; font-size: 20px; margin-bottom:-15px; text-align: center">Posts</p>',unsafe_allow_html=True)
             for item in postinfo.find() :
                 count+=1
                 call_post(item['name'],item['description'],count)
